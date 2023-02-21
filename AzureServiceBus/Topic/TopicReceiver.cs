@@ -1,11 +1,12 @@
 ﻿using Azure.Messaging.ServiceBus;
 
-namespace AzureServiceBus.Queue
+namespace AzureServiceBus.Topic
 {
-    public static class QueueReceiver
+    public static class TopicReceiver
     {
         private static string _namespaceConnectionString = "<inform-the-namespace-connection-string>";
-        private static string _queue = "<inform-the-queue-name>";
+        private static string _topic = "<inform-the-topic-name>";
+        private static string _subscriptionName = "<inform-the-subscription-name>";
 
         public static async Task ReceiveMessages()
         {
@@ -13,9 +14,9 @@ namespace AzureServiceBus.Queue
             async Task MessageHandler(ProcessMessageEventArgs args)
             {
                 string body = args.Message.Body.ToString();
-                Console.WriteLine($"Received: {body}");
+                Console.WriteLine($"Received: {body} from subscription: {_subscriptionName}");
 
-                // Complete the message, and message is deleted from the queue;
+                // Complete the message, and messages are deleted from the subscription;
                 await args.CompleteMessageAsync(args.Message);
             }
 
@@ -26,13 +27,11 @@ namespace AzureServiceBus.Queue
                 return Task.CompletedTask;
             }
 
-            var clientOptions = new ServiceBusClientOptions()
-            {
-                TransportType = ServiceBusTransportType.AmqpWebSockets
-            };
+            // The Service Bus client types are safe to cache and use as a singleton for the lifetime
+            // of the application, which is best practice when messages are being published or read regularly;
+            var serviceBusClient = new ServiceBusClient(_namespaceConnectionString);
 
-            var serviceBusClient = new ServiceBusClient(_namespaceConnectionString, clientOptions);
-            var serviceBusProcessor = serviceBusClient.CreateProcessor(_queue, new ServiceBusProcessorOptions());
+            var serviceBusProcessor = serviceBusClient.CreateProcessor(_topic, _subscriptionName, new ServiceBusProcessorOptions());
 
             try
             {
