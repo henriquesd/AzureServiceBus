@@ -5,7 +5,7 @@ namespace AzureServiceBus.Topic
     public static class TopicSender
     {
         private static string _namespaceConnectionString = "<inform-the-namespace-connection-string>";
-        private static string _topic = "<inform-the-topic-name>";
+        private static string _topicName = "<inform-the-topic-name>";
 
         private static int _numberOfMessages = 10;
 
@@ -15,7 +15,7 @@ namespace AzureServiceBus.Topic
             // of the application, which is best practice when messages are being published or read regularly;
             var serviceBusClient = new ServiceBusClient(_namespaceConnectionString);
 
-            var serviceBusSender = serviceBusClient.CreateSender(_topic);
+            var serviceBusSender = serviceBusClient.CreateSender(_topicName);
 
             using ServiceBusMessageBatch messageBatch = await serviceBusSender.CreateMessageBatchAsync();
 
@@ -23,7 +23,7 @@ namespace AzureServiceBus.Topic
             {
                 if (!messageBatch.TryAddMessage(new ServiceBusMessage($"Message {i}")))
                 {
-                    // throw an Exception in case it is too large for the batch
+                    // throw an Exception in case it is too large for the batch;
                     throw new Exception($"The message {i} is too large to fit in the batch.");
                 }
             }
@@ -36,7 +36,7 @@ namespace AzureServiceBus.Topic
             finally
             {
                 // Calling DisposeAsync on client types is required to ensure that network
-                // resources and other unmanaged objects are properly cleaned up.
+                // resources and other unmanaged objects are properly cleaned up;
                 await serviceBusSender.DisposeAsync();
                 await serviceBusClient.DisposeAsync();
             }

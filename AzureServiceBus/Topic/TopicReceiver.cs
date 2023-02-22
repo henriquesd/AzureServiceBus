@@ -5,7 +5,7 @@ namespace AzureServiceBus.Topic
     public static class TopicReceiver
     {
         private static string _namespaceConnectionString = "<inform-the-namespace-connection-string>";
-        private static string _topic = "<inform-the-topic-name>";
+        private static string _topicName = "<inform-the-topic-name>";
         private static string _subscriptionName = "<inform-the-subscription-name>";
 
         public static async Task ReceiveMessages()
@@ -14,14 +14,14 @@ namespace AzureServiceBus.Topic
             // of the application, which is best practice when messages are being published or read regularly;
             var serviceBusClient = new ServiceBusClient(_namespaceConnectionString);
 
-            var serviceBusProcessor = serviceBusClient.CreateProcessor(_topic, _subscriptionName, new ServiceBusProcessorOptions());
+            var serviceBusProcessor = serviceBusClient.CreateProcessor(_topicName, _subscriptionName, new ServiceBusProcessorOptions());
 
             try
             {
-                // Add handler to process messages
+                // Add handler to process messages;
                 serviceBusProcessor.ProcessMessageAsync += MessageHandler;
 
-                // Add handler to process any errors
+                // Add handler to process any errors;
                 serviceBusProcessor.ProcessErrorAsync += ErrorHandler;
 
                 await serviceBusProcessor.StartProcessingAsync();
@@ -36,7 +36,7 @@ namespace AzureServiceBus.Topic
             finally
             {
                 // Calling DisposeAsync on client types is required to ensure that network
-                // resources and other unmanaged objects are properly cleaned up.
+                // resources and other unmanaged objects are properly cleaned up;
                 await serviceBusProcessor.DisposeAsync();
                 await serviceBusClient.DisposeAsync();
             }

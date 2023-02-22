@@ -5,7 +5,7 @@ namespace AzureServiceBus.Queue
     public static class QueueReceiver
     {
         private static string _namespaceConnectionString = "<inform-the-namespace-connection-string>";
-        private static string _queue = "<inform-the-queue-name>";
+        private static string _queueName = "<inform-the-queue-name>";
 
         public static async Task ReceiveMessages()
         {
@@ -15,14 +15,15 @@ namespace AzureServiceBus.Queue
             };
 
             var serviceBusClient = new ServiceBusClient(_namespaceConnectionString, clientOptions);
-            var serviceBusProcessor = serviceBusClient.CreateProcessor(_queue, new ServiceBusProcessorOptions());
+
+            var serviceBusProcessor = serviceBusClient.CreateProcessor(_queueName, new ServiceBusProcessorOptions());
 
             try
             {
-                // add handler to process messages
+                // Add handler to process messages;
                 serviceBusProcessor.ProcessMessageAsync += MessageHandler;
 
-                // add handler to process any errors
+                // Add handler to process any errors;
                 serviceBusProcessor.ProcessErrorAsync += ErrorHandler;
 
                 await serviceBusProcessor.StartProcessingAsync();
@@ -37,7 +38,7 @@ namespace AzureServiceBus.Queue
             finally
             {
                 // Calling DisposeAsync on client types is required to ensure that network
-                // resources and other unmanaged objects are properly cleaned up.
+                // resources and other unmanaged objects are properly cleaned up;
                 await serviceBusProcessor.DisposeAsync();
                 await serviceBusClient.DisposeAsync();
             }

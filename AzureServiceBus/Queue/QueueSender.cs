@@ -5,9 +5,10 @@ namespace AzureServiceBus.Queue
     public static class QueueSender
     {
         private static string _namespaceConnectionString = "<inform-the-namespace-connection-string>";
-        private static string _queue = "<inform-the-queue-name>";
+        private static string _queueName = "<inform-the-queue-name>";
 
         private static int _numberOfMessages = 10;
+
         public static async Task SendMessages()
         {
             var clientOptions = new ServiceBusClientOptions
@@ -17,7 +18,7 @@ namespace AzureServiceBus.Queue
 
             var serviceBusClient = new ServiceBusClient(_namespaceConnectionString, clientOptions);
 
-            var serviceBusSender = serviceBusClient.CreateSender(_queue);
+            var serviceBusSender = serviceBusClient.CreateSender(_queueName);
 
             using ServiceBusMessageBatch messageBatch = await serviceBusSender.CreateMessageBatchAsync();
 
@@ -38,7 +39,7 @@ namespace AzureServiceBus.Queue
             finally
             {
                 // Calling DisposeAsync on client types is required to ensure that network
-                // resources and other unmanaged objects are properly cleaned up.
+                // resources and other unmanaged objects are properly cleaned up;
                 await serviceBusSender.DisposeAsync();
                 await serviceBusClient.DisposeAsync();
             }
@@ -52,7 +53,8 @@ namespace AzureServiceBus.Queue
             };
 
             var serviceBusClient = new ServiceBusClient(_namespaceConnectionString, clientOptions);
-            var serviceBusSender = serviceBusClient.CreateSender(_queue);
+
+            var serviceBusSender = serviceBusClient.CreateSender(_queueName);
 
             try
             {
@@ -65,7 +67,7 @@ namespace AzureServiceBus.Queue
             finally
             {
                 // Calling DisposeAsync on client types is required to ensure that network
-                // resources and other unmanaged objects are properly cleaned up.
+                // resources and other unmanaged objects are properly cleaned up;
                 await serviceBusSender.DisposeAsync();
                 await serviceBusClient.DisposeAsync();
             }
