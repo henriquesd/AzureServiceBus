@@ -8,7 +8,6 @@ namespace AzureServiceBus.Queue
         private static string _queue = "<inform-the-queue-name>";
 
         private static int _numberOfMessages = 10;
-
         public static async Task SendMessages()
         {
             var clientOptions = new ServiceBusClientOptions
@@ -17,6 +16,7 @@ namespace AzureServiceBus.Queue
             };
 
             var serviceBusClient = new ServiceBusClient(_namespaceConnectionString, clientOptions);
+
             var serviceBusSender = serviceBusClient.CreateSender(_queue);
 
             using ServiceBusMessageBatch messageBatch = await serviceBusSender.CreateMessageBatchAsync();

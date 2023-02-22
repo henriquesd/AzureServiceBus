@@ -10,23 +10,6 @@ namespace AzureServiceBus.Topic
 
         public static async Task ReceiveMessages()
         {
-            // handle received messages
-            async Task MessageHandler(ProcessMessageEventArgs args)
-            {
-                string body = args.Message.Body.ToString();
-                Console.WriteLine($"Received: {body} from subscription: {_subscriptionName}");
-
-                // Complete the message, and messages are deleted from the subscription;
-                await args.CompleteMessageAsync(args.Message);
-            }
-
-            // handle any errors when receiving messages
-            Task ErrorHandler(ProcessErrorEventArgs args)
-            {
-                Console.WriteLine(args.Exception.ToString());
-                return Task.CompletedTask;
-            }
-
             // The Service Bus client types are safe to cache and use as a singleton for the lifetime
             // of the application, which is best practice when messages are being published or read regularly;
             var serviceBusClient = new ServiceBusClient(_namespaceConnectionString);
@@ -35,10 +18,10 @@ namespace AzureServiceBus.Topic
 
             try
             {
-                // add handler to process messages
+                // Add handler to process messages
                 serviceBusProcessor.ProcessMessageAsync += MessageHandler;
 
-                // add handler to process any errors
+                // Add handler to process any errors
                 serviceBusProcessor.ProcessErrorAsync += ErrorHandler;
 
                 await serviceBusProcessor.StartProcessingAsync();
@@ -46,7 +29,6 @@ namespace AzureServiceBus.Topic
                 Console.WriteLine("Wait for a minute and then press any key to end the processing");
                 Console.ReadKey();
 
-                // stop processing 
                 Console.WriteLine("\nStopping the receiver...");
                 await serviceBusProcessor.StopProcessingAsync();
                 Console.WriteLine("Stopped receiving messages");
@@ -58,6 +40,23 @@ namespace AzureServiceBus.Topic
                 await serviceBusProcessor.DisposeAsync();
                 await serviceBusClient.DisposeAsync();
             }
+        }
+
+        // Handle received messages;
+        private static async Task MessageHandler(ProcessMessageEventArgs args)
+        {
+            string body = args.Message.Body.ToString();
+            Console.WriteLine($"Received: {body} from subscription: {_subscriptionName}");
+
+            // Complete the message, and messages are deleted from the subscription;
+            await args.CompleteMessageAsync(args.Message);
+        }
+
+        // Handle any errors when receiving messages;
+        private static Task ErrorHandler(ProcessErrorEventArgs args)
+        {
+            Console.WriteLine(args.Exception.ToString());
+            return Task.CompletedTask;
         }
     }
 }
